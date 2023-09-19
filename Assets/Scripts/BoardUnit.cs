@@ -14,7 +14,6 @@ public class BoardUnit : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        tmpBoardUnitLabel.text = $"B[{row}, {col}]]";
     }
 
     // Update is called once per frame

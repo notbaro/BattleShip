@@ -6,7 +6,7 @@ public class BoardManager : MonoBehaviour
 {
     private int[] shipSizes = {2, 3, 3, 4, 5};
     private int shipSize = 2;
-    private bool isVertical = true;
+    private bool isVertical = false;
 
     public BoardPlayer boardPlayer;
     public BoardAI boardAI;
@@ -50,6 +50,7 @@ public class BoardManager : MonoBehaviour
     private void OnChangeShip(int id)
     {
         currentShipID = id;
+        shipSize = shipSizes[currentShipID];
         Debug.Log($"Ship size: {shipSizes[id]}, id: {id}");
     }
 
@@ -68,7 +69,7 @@ public class BoardManager : MonoBehaviour
         boardAI.CreateAIBoard();
 
         currentShipID = 0;
-        shipSize = 0;
+        shipSize = shipSizes[currentShipID];
     }
 
 
@@ -87,10 +88,9 @@ public class BoardManager : MonoBehaviour
             {
                 BoardUnit tmpUI = tmpHitHighlight.transform.GetComponent<BoardUnit>();
 
-                if (tmpBlockHolder.transform.tag.Equals("BoardUnit") && !tmpUI.isOccupied)
+                if (tmpHitHighlight.transform.tag.Equals("BoardUnit") && !tmpUI.isOccupied)
                 {
-                    BoardUnit boardData = boardPlayer.board[tmpUI.row, tmpUI.col].transform.GetComponent<BoardUnit>();
-
+                    BoardUnit boardData = boardPlayer.board[tmpUI.row, tmpUI.col].transform.GetComponentInChildren<BoardUnit>();
                     if (tmpHighlight != null)
                     {
                         if (boardData.isOccupied)
@@ -111,12 +111,14 @@ public class BoardManager : MonoBehaviour
 
                         if (!isVertical && (tmpUI.row <= 10 - shipSize))
                         {
+                            Debug.Log($"Horizontal, size = {shipSize}"); //debug
                             for (int i = 0; i < shipSize; i++)
                             {
                                 GameObject visual = GameObject.Instantiate(BlockVisualizerPrefab, new Vector3(tmpUI.row + i, BlockVisualizerPrefab.transform.position.y, tmpUI.col), BlockVisualizerPrefab.transform.rotation) as GameObject;
 
                                 GameObject bp = boardPlayer.board[tmpUI.row + i, tmpUI.col];
                                 BoardUnit bpUI = bp.GetComponentInChildren<BoardUnit>();
+                                Debug.Log($"B[{bpUI.row}, {bpUI.col}]"); //debug
                                 if (!bpUI.isOccupied)
                                 {
                                     visual.GetComponent<Renderer>().material.color = Color.gray; //ok to place
@@ -131,7 +133,25 @@ public class BoardManager : MonoBehaviour
                         }
 
                         if (isVertical && (tmpUI.col <= 10 - shipSize))
-                        {}
+                        {
+                            for (int i = 0; i < shipSize; i++)
+                            {
+                                GameObject visual = GameObject.Instantiate(BlockVisualizerPrefab, new Vector3(tmpUI.row, BlockVisualizerPrefab.transform.position.y, tmpUI.col + i), BlockVisualizerPrefab.transform.rotation) as GameObject;
+
+                                GameObject bp = boardPlayer.board[tmpUI.row, tmpUI.col + i];
+                                BoardUnit bpUI = bp.GetComponentInChildren<BoardUnit>();
+                                if (!bpUI.isOccupied)
+                                {
+                                    visual.GetComponent<Renderer>().material.color = Color.gray; //ok to place
+                                }
+                                else
+                                {
+                                    visual.GetComponent<Renderer>().material.color = Color.red; //can't be placed
+                                    OK_TO_PLACE = false;
+                                }
+                                visual.transform.parent = tmpBlockHolder.transform;
+                            }
+                        }
                     }
                 }
             }

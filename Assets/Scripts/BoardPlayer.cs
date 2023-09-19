@@ -23,11 +23,11 @@ public class BoardPlayer : Board
                 //instantiate boardunit prefab and place on scene
                 GameObject tmp = GameObject.Instantiate(boardUnitPrefab, new Vector3(i, 0, j), boardUnitPrefab.transform.rotation) as GameObject;
                 BoardUnit tmpUI = tmp.GetComponentInChildren<BoardUnit>();
-                string name = string.Format($"B1:[{1:00}, {2:00}]", row, col);
+                string name = string.Format($"B1[{row - 1}, {col - 1}]");
                 tmpUI.tmpBoardUnitLabel.text = name;
-                tmpUI.row = i;
-                tmpUI.col = j;
-                board[i, j] = tmp;
+                tmpUI.row = row - 1;
+                tmpUI.col = col - 1;
+                board[tmpUI.row, tmpUI.col] = tmp;
                 tmp.name = name;
                 col++;
             }

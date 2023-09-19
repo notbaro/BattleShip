@@ -18,14 +18,14 @@ public class BoardAI : Board
         //create AI Controlled Board - 10x10
         int row = 1;
         int col = 1;
-        for (int i = 0; i < 10; i++)
+        for (int i = 11; i < 21; i++)
         {
             for (int j = 0; j < 10; j++)
             {
                 //instantiate boardunit prefab and place on scene
-                GameObject tmp = GameObject.Instantiate(boardUnitPrefab, new Vector3(i, 0, j), boardUnitPrefab.transform.rotation) as GameObject;
+                GameObject tmp = GameObject.Instantiate(boardUnitPrefab, new Vector3(i, 0, j), boardUnitPrefab.transform.rotation);
                 BoardUnit tmpUI = tmp.GetComponentInChildren<BoardUnit>();
-                string name = string.Format($"B2:[{1:00}, {2:00}]", row, col);
+                string name = string.Format($"B2[{row - 1}, {col - 1}]", row, col);
                 tmpUI.tmpBoardUnitLabel.text = name;
                 tmpUI.row = row - 1;
                 tmpUI.col = col - 1;
