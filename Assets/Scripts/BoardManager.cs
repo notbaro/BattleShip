@@ -51,13 +51,11 @@ public class BoardManager : MonoBehaviour
     {
         currentShipID = id;
         shipSize = shipSizes[currentShipID];
-        Debug.Log($"Ship size: {shipSizes[id]}, id: {id}");
     }
 
     private void OnChangeOrientation()
     {
         isVertical = !isVertical;
-        Debug.Log($"is vertical: {isVertical}");
     }
     // Start is called before the first frame update
     void Start()
@@ -111,14 +109,12 @@ public class BoardManager : MonoBehaviour
 
                         if (!isVertical && (tmpUI.row <= 10 - shipSize))
                         {
-                            Debug.Log($"Horizontal, size = {shipSize}"); //debug
                             for (int i = 0; i < shipSize; i++)
                             {
                                 GameObject visual = GameObject.Instantiate(BlockVisualizerPrefab, new Vector3(tmpUI.row + i, BlockVisualizerPrefab.transform.position.y, tmpUI.col), BlockVisualizerPrefab.transform.rotation) as GameObject;
 
                                 GameObject bp = boardPlayer.board[tmpUI.row + i, tmpUI.col];
                                 BoardUnit bpUI = bp.GetComponentInChildren<BoardUnit>();
-                                Debug.Log($"B[{bpUI.row}, {bpUI.col}]"); //debug
                                 if (!bpUI.isOccupied)
                                 {
                                     visual.GetComponent<Renderer>().material.color = Color.gray; //ok to place
