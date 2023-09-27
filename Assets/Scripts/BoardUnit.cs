@@ -10,6 +10,7 @@ public class BoardUnit : MonoBehaviour
     public bool isVertical;
     public bool isOccupied;
     public TMP_Text tmpBoardUnitLabel;
+    public GameObject CubePrefab;
 
     // Start is called before the first frame update
     void Start()

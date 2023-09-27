@@ -3,7 +3,13 @@ guid: d44f99d1de3120042a173bc9e51d4389
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - BoardUnitPrefab: {fileID: 2531944195430783703, guid: bca544d93dedc43419c7755847011006,
+      type: 3}
+  - BoardUnitAttackPrefab: {fileID: 2531944195430783703, guid: bca544d93dedc43419c7755847011006,
+      type: 3}
+  - BlockVisualizerPrefab: {fileID: 6127506112281594607, guid: a87c4a15b37f52341be652a9d387e37e,
+      type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

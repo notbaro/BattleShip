@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BoardManager : MonoBehaviour
@@ -19,8 +20,7 @@ public class BoardManager : MonoBehaviour
     public List<GameObject> boardPiecesPref;
 
     [Header("----")]
-    //public int blockSize = 3;
-    //public bool Orientation = false;
+
 
     bool PLACE_BLOCK = true;
 
@@ -77,7 +77,7 @@ public class BoardManager : MonoBehaviour
         PlacePlayerPieces();
     }
 
-    private void PlacePlayerPieces() //to be renamed
+    private void PlacePlayerPieces()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); //Ray from camera to mouse position
         if (Input.mousePosition != null)
@@ -107,7 +107,7 @@ public class BoardManager : MonoBehaviour
                         tmpBlockHolder = new GameObject();
                         OK_TO_PLACE = true;
 
-                        if (!isVertical && (tmpUI.row <= 10 - shipSize))
+                        if (!isVertical && (tmpUI.row <= 10 - shipSize)) //horizontal placing
                         {
                             for (int i = 0; i < shipSize; i++)
                             {
@@ -128,7 +128,7 @@ public class BoardManager : MonoBehaviour
                             }
                         }
 
-                        if (isVertical && (tmpUI.col <= 10 - shipSize))
+                        if (isVertical && (tmpUI.col <= 10 - shipSize)) //vertical placing
                         {
                             for (int i = 0; i < shipSize; i++)
                             {
@@ -146,6 +146,52 @@ public class BoardManager : MonoBehaviour
                                     OK_TO_PLACE = false;
                                 }
                                 visual.transform.parent = tmpBlockHolder.transform;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (Input.GetMouseButtonDown(0)) 
+        {
+            Debug.Log("LMB down");//remove this
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, 100))
+            {
+                Debug.Log(hit.transform.name); //remove this
+                if (hit.transform.tag.Equals("BoardUnit"))
+                {
+                    Debug.Log("Hit BoardUnit"); //remove this
+                    BoardUnit tmpUI = hit.transform.GetComponentInChildren<BoardUnit>();
+                    if (PLACE_BLOCK && OK_TO_PLACE) 
+                    {
+                        if (!isVertical)
+                        {
+                            Debug.Log("Horizontal placing"); //remove this
+                            for (int i = 0; i < shipSize; i++)
+                            {
+                                GameObject sB = boardPlayer.board[tmpUI.row + i, tmpUI.col];
+                                BoardUnit bu = sB.transform.GetComponentInChildren<BoardUnit>();
+                                bu.isOccupied = true;
+                                bu.CubePrefab.gameObject.GetComponent<MeshRenderer>().material.color = Color.green;
+                                bu.CubePrefab.gameObject.SetActive(true);
+                                bu.GetComponent<MeshRenderer>().material.color = Color.green;
+
+                                boardPlayer.board[tmpUI.row + i, tmpUI.col] = sB;
+                            }
+                        }
+                        if (isVertical)
+                        {
+                            for (int i = 0; i < shipSize; i++)
+                            {
+                                GameObject sB = boardPlayer.board[tmpUI.row, tmpUI.col + i];
+                                BoardUnit bu = sB.transform.GetComponentInChildren<BoardUnit>();
+                                bu.isOccupied = true;
+                                bu.CubePrefab.gameObject.GetComponent<MeshRenderer>().material.color = Color.green;
+                                bu.CubePrefab.gameObject.SetActive(true);
+                                bu.GetComponent<MeshRenderer>().material.color = Color.green;
+
+                                boardPlayer.board[tmpUI.row, tmpUI.col + i] = sB;
                             }
                         }
                     }
