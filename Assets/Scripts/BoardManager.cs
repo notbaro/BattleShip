@@ -5,9 +5,10 @@ using UnityEngine;
 
 public class BoardManager : MonoBehaviour
 {
-    private int[] shipSizes = {2, 3, 3, 4, 5};
+    private int[] shipSizes = { 2, 3, 3, 4, 5 };
     private int shipSize = 2;
     private bool isVertical = false;
+    private bool[] shipPlaced = { false, false, false, false, false }; 
 
     public BoardPlayer boardPlayer;
     public BoardAI boardAI;
@@ -75,6 +76,12 @@ public class BoardManager : MonoBehaviour
     void Update()
     {
         PlacePlayerPieces();
+        PLACE_BLOCK = !shipPlaced[currentShipID];
+        Debug.Log("OK_TO_PLACE: " + OK_TO_PLACE);
+        for (int i = 0; i < shipPlaced.Length; i++)
+        {
+            Debug.Log($"shipPlaced[{i}]: " + shipPlaced[i]);
+        }
     }
 
     private void PlacePlayerPieces()
@@ -85,7 +92,7 @@ public class BoardManager : MonoBehaviour
             if (Physics.Raycast(ray, out tmpHitHighlight, 100))
             {
                 BoardUnit tmpUI = tmpHitHighlight.transform.GetComponent<BoardUnit>();
-
+                OK_TO_PLACE = true;
                 if (tmpHitHighlight.transform.tag.Equals("BoardUnit") && !tmpUI.isOccupied)
                 {
                     BoardUnit boardData = boardPlayer.board[tmpUI.row, tmpUI.col].transform.GetComponentInChildren<BoardUnit>();
@@ -105,12 +112,13 @@ public class BoardManager : MonoBehaviour
                     if (PLACE_BLOCK)
                     {
                         tmpBlockHolder = new GameObject();
-                        OK_TO_PLACE = true;
+
 
                         if (!isVertical && (tmpUI.row <= 10 - shipSize)) //horizontal placing
                         {
                             for (int i = 0; i < shipSize; i++)
                             {
+                                //create a visual block
                                 GameObject visual = GameObject.Instantiate(BlockVisualizerPrefab, new Vector3(tmpUI.row + i, BlockVisualizerPrefab.transform.position.y, tmpUI.col), BlockVisualizerPrefab.transform.rotation) as GameObject;
 
                                 GameObject bp = boardPlayer.board[tmpUI.row + i, tmpUI.col];
@@ -128,10 +136,11 @@ public class BoardManager : MonoBehaviour
                             }
                         }
 
-                        if (isVertical && (tmpUI.col <= 10 - shipSize)) //vertical placing
+                        else if (isVertical && (tmpUI.col <= 10 - shipSize)) //vertical placing
                         {
                             for (int i = 0; i < shipSize; i++)
                             {
+
                                 GameObject visual = GameObject.Instantiate(BlockVisualizerPrefab, new Vector3(tmpUI.row, BlockVisualizerPrefab.transform.position.y, tmpUI.col + i), BlockVisualizerPrefab.transform.rotation) as GameObject;
 
                                 GameObject bp = boardPlayer.board[tmpUI.row, tmpUI.col + i];
@@ -148,56 +157,63 @@ public class BoardManager : MonoBehaviour
                                 visual.transform.parent = tmpBlockHolder.transform;
                             }
                         }
+                        else //if the location is out of bounds
+                        {
+                            OK_TO_PLACE = false;
+                        }
                     }
                 }
+                else
+                {
+                    OK_TO_PLACE = false;
+                }
             }
+
+
         }
-        if (Input.GetMouseButtonDown(0)) 
+        if (Input.GetMouseButtonDown(0)) //
         {
-            Debug.Log("LMB down");//remove this
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 100))
             {
-                Debug.Log(hit.transform.name); //remove this
                 if (hit.transform.tag.Equals("BoardUnit"))
                 {
-                    Debug.Log("Hit BoardUnit"); //remove this
                     BoardUnit tmpUI = hit.transform.GetComponentInChildren<BoardUnit>();
-                    if (PLACE_BLOCK && OK_TO_PLACE) 
+                    if (PLACE_BLOCK && OK_TO_PLACE)
                     {
                         if (!isVertical)
                         {
-                            Debug.Log("Horizontal placing"); //remove this
                             for (int i = 0; i < shipSize; i++)
                             {
-                                GameObject sB = boardPlayer.board[tmpUI.row + i, tmpUI.col];
-                                BoardUnit bu = sB.transform.GetComponentInChildren<BoardUnit>();
-                                bu.isOccupied = true;
-                                bu.CubePrefab.gameObject.GetComponent<MeshRenderer>().material.color = Color.green;
-                                bu.CubePrefab.gameObject.SetActive(true);
-                                bu.GetComponent<MeshRenderer>().material.color = Color.green;
+                                GameObject boardElement = boardPlayer.board[tmpUI.row + i, tmpUI.col];
+                                BoardUnit boardUnit = boardElement.transform.GetComponentInChildren<BoardUnit>();
+                                boardUnit.isOccupied = true;
+                                boardUnit.CubePrefab.gameObject.GetComponent<MeshRenderer>().material.color = Color.green;
+                                boardUnit.CubePrefab.gameObject.SetActive(true);
+                                boardUnit.GetComponent<MeshRenderer>().material.color = Color.green;
 
-                                boardPlayer.board[tmpUI.row + i, tmpUI.col] = sB;
+                                boardPlayer.board[tmpUI.row + i, tmpUI.col] = boardElement;
                             }
                         }
                         if (isVertical)
                         {
                             for (int i = 0; i < shipSize; i++)
                             {
-                                GameObject sB = boardPlayer.board[tmpUI.row, tmpUI.col + i];
-                                BoardUnit bu = sB.transform.GetComponentInChildren<BoardUnit>();
-                                bu.isOccupied = true;
-                                bu.CubePrefab.gameObject.GetComponent<MeshRenderer>().material.color = Color.green;
-                                bu.CubePrefab.gameObject.SetActive(true);
-                                bu.GetComponent<MeshRenderer>().material.color = Color.green;
+                                GameObject boardElement = boardPlayer.board[tmpUI.row, tmpUI.col + i];
+                                BoardUnit boardUnit = boardElement.transform.GetComponentInChildren<BoardUnit>();
+                                boardUnit.isOccupied = true;
+                                boardUnit.CubePrefab.gameObject.GetComponent<MeshRenderer>().material.color = Color.green;
+                                boardUnit.CubePrefab.gameObject.SetActive(true);
+                                boardUnit.GetComponent<MeshRenderer>().material.color = Color.green;
 
-                                boardPlayer.board[tmpUI.row, tmpUI.col + i] = sB;
+                                boardPlayer.board[tmpUI.row, tmpUI.col + i] = boardElement;
                             }
                         }
+                        shipPlaced[currentShipID] = true;
                     }
                 }
             }
         }
     }
-    
+
 }
