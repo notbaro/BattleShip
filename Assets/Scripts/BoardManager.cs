@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -5,10 +6,16 @@ using UnityEngine;
 
 public class BoardManager : MonoBehaviour
 {
+    public delegate void StartGame(bool val);
+    public static event StartGame OnStartGame;
+
+    public delegate void BoardPiecePlaced(int id);
+    public static event BoardPiecePlaced OnBoardPiecePlaced;
+
     private int[] shipSizes = { 2, 3, 3, 4, 5 };
-    private int shipSize = 2;
+    private int shipSize = 0;
     private bool isVertical = false;
-    private bool[] shipPlaced = { false, false, false, false, false }; 
+    private bool[] shipPlaced = { false, false, false, false, false };
 
     public BoardPlayer boardPlayer;
     public BoardAI boardAI;
@@ -26,7 +33,7 @@ public class BoardManager : MonoBehaviour
     bool PLACE_BLOCK = true;
 
     [SerializeField]
-    private int currentShipID;
+    private int currentShipID = -1;
 
     GameObject tmpHighlight = null;
     RaycastHit tmpHitHighlight;
@@ -35,6 +42,11 @@ public class BoardManager : MonoBehaviour
 
     private bool OK_TO_PLACE = true;
     [SerializeField]
+    private int shipPlacedCount = 0;
+    bool placeEnemyShip = true;
+    GameObject tmpAttackHighlight = null;
+    RaycastHit tmpHitAttackHighlight;
+    GameObject tmpAttackBlockHolder = null;
 
     private void OnEnable()
     {
@@ -48,13 +60,13 @@ public class BoardManager : MonoBehaviour
         UIBoardManager.OnChangeOrientation -= OnChangeOrientation;
     }
 
-    private void OnChangeShip(int id)
+    private void OnChangeShip(int id, int size)
     {
         currentShipID = id;
-        shipSize = shipSizes[currentShipID];
+        shipSize = size;
     }
 
-    private void OnChangeOrientation()
+    private void OnChangeOrientation(bool Orientation)
     {
         isVertical = !isVertical;
     }
@@ -67,20 +79,33 @@ public class BoardManager : MonoBehaviour
         boardAI = new BoardAI(BoardUnitAttackPrefab, BlockVisualizerPrefab);
         boardAI.CreateAIBoard();
 
-        currentShipID = 0;
-        shipSize = shipSizes[currentShipID];
+        currentShipID = -1;
+        shipSize = 0;
     }
 
 
     // Update is called once per frame
     void Update()
     {
-        PlacePlayerPieces();
-        PLACE_BLOCK = !shipPlaced[currentShipID];
-        Debug.Log("OK_TO_PLACE: " + OK_TO_PLACE);
-        for (int i = 0; i < shipPlaced.Length; i++)
+        // PlacePlayerPieces();
+        // PLACE_BLOCK = !shipPlaced[currentShipID];
+        // Debug.Log("OK_TO_PLACE: " + OK_TO_PLACE);
+        // for (int i = 0; i < shipPlaced.Length; i++)
+        // {
+        //     Debug.Log($"shipPlaced[{i}]: " + shipPlaced[i]);
+        // }
+        if (isBusy)
+            return;
+        if (shipPlacedCount < 5)
+            PlacePlayerPieces();
+        else
         {
-            Debug.Log($"shipPlaced[{i}]: " + shipPlaced[i]);
+            if (placeEnemyShip)
+            {
+                boardAI.PlaceShips();
+                placeEnemyShip = false;
+                OnStartGame?.Invoke(true);
+            }
         }
     }
 
@@ -188,8 +213,8 @@ public class BoardManager : MonoBehaviour
                                 GameObject boardElement = boardPlayer.board[tmpUI.row + i, tmpUI.col];
                                 BoardUnit boardUnit = boardElement.transform.GetComponentInChildren<BoardUnit>();
                                 boardUnit.isOccupied = true;
-                                boardUnit.CubePrefab.gameObject.GetComponent<MeshRenderer>().material.color = Color.green;
-                                boardUnit.CubePrefab.gameObject.SetActive(true);
+                                //boardUnit.CubePrefab.gameObject.GetComponent<MeshRenderer>().material.color = Color.green;
+                                //boardUnit.CubePrefab.gameObject.SetActive(true);
                                 boardUnit.GetComponent<MeshRenderer>().material.color = Color.green;
 
                                 boardPlayer.board[tmpUI.row + i, tmpUI.col] = boardElement;
@@ -202,18 +227,125 @@ public class BoardManager : MonoBehaviour
                                 GameObject boardElement = boardPlayer.board[tmpUI.row, tmpUI.col + i];
                                 BoardUnit boardUnit = boardElement.transform.GetComponentInChildren<BoardUnit>();
                                 boardUnit.isOccupied = true;
-                                boardUnit.CubePrefab.gameObject.GetComponent<MeshRenderer>().material.color = Color.green;
-                                boardUnit.CubePrefab.gameObject.SetActive(true);
+                                //boardUnit.CubePrefab.gameObject.GetComponent<MeshRenderer>().material.color = Color.green;
+                                //boardUnit.CubePrefab.gameObject.SetActive(true);
                                 boardUnit.GetComponent<MeshRenderer>().material.color = Color.green;
 
                                 boardPlayer.board[tmpUI.row, tmpUI.col + i] = boardElement;
                             }
                         }
-                        shipPlaced[currentShipID] = true;
+                        CheckWhichShipPlaced(tmpUI.row, tmpUI.col);
+                        OK_TO_PLACE = true;
+                        tmpHighlight = null;
                     }
+                    if (shipPlacedCount == 5 && tmpBlockHolder != null)
+                    {
+                        Destroy(tmpBlockHolder);
+
+                    }
+
                 }
             }
         }
     }
+    
+    private void CheckWhichShipPlaced(int row, int col) //placing ship models
+    {
+        switch (currentShipID)
+        {
+            case 0:
+                if (!isVertical)
+                {
+                    GameObject shipVisual = GameObject.Instantiate(boardPiecesPref[currentShipID], new Vector3(row + .4f, boardPiecesPref[currentShipID].transform.position.y, col), boardPiecesPref[currentShipID].transform.rotation) as GameObject;
+                    shipVisual.transform.localScale = new Vector3(.7f, .7f, .7f);
+                    shipVisual.transform.RotateAround(shipVisual.transform.position, Vector3.up, 90f);
+                }
+                else
+                {
+                    GameObject shipVisual = GameObject.Instantiate(boardPiecesPref[currentShipID], new Vector3(row, boardPiecesPref[currentShipID].
+                    transform.position.y, col + .4f), boardPiecesPref[currentShipID].transform.rotation) as GameObject;
+                    shipVisual.transform.localScale = new Vector3(.7f, .7f, .7f);
 
+                }
+                shipPlacedCount++;
+                break;
+            case 1:
+                if (!isVertical)
+                {
+                    GameObject shipVisual = GameObject.Instantiate(boardPiecesPref[currentShipID], new Vector3(row + 1, boardPiecesPref[currentShipID].transform.position.y +.15f, col), boardPiecesPref[currentShipID].transform.rotation) as GameObject;
+                    shipVisual.transform.localScale = new Vector3(.5f, .5f, .5f);
+                    shipVisual.transform.RotateAround(shipVisual.transform.position, Vector3.up, 90f);
+                }
+                else
+                {
+                    GameObject shipVisual = GameObject.Instantiate(boardPiecesPref[currentShipID], new Vector3(row, boardPiecesPref[currentShipID].
+                    transform.position.y + .15f, col + 1), boardPiecesPref[currentShipID].transform.rotation) as GameObject;
+                    shipVisual.transform.localScale = new Vector3(.5f, .5f, .5f);
+
+                }
+                shipPlacedCount++;
+                break;
+            case 2:
+            if (!isVertical)
+                {
+                    GameObject shipVisual = GameObject.Instantiate(boardPiecesPref[currentShipID], new Vector3(row + .9f, boardPiecesPref[currentShipID].transform.position.y, col), boardPiecesPref[currentShipID].transform.rotation) as GameObject;
+                    shipVisual.transform.localScale = new Vector3(.5f, .5f, .5f);
+                    shipVisual.transform.RotateAround(shipVisual.transform.position, Vector3.up, 90f);
+                }
+                else
+                {
+                    GameObject shipVisual = GameObject.Instantiate(boardPiecesPref[currentShipID], new Vector3(row, boardPiecesPref[currentShipID].
+                    transform.position.y, col + .9f), boardPiecesPref[currentShipID].transform.rotation) as GameObject;
+                    shipVisual.transform.localScale = new Vector3(.5f, .5f, .5f);
+
+                }
+                shipPlacedCount++;
+                break;
+            case 3:
+            if (!isVertical)
+                {
+                    GameObject shipVisual = GameObject.Instantiate(boardPiecesPref[currentShipID], new Vector3(row + 1.5f, boardPiecesPref[currentShipID].transform.position.y, col), boardPiecesPref[currentShipID].transform.rotation) as GameObject;
+                    shipVisual.transform.RotateAround(shipVisual.transform.position, Vector3.up, 90f);
+                }
+                else
+                {
+                    GameObject shipVisual = GameObject.Instantiate(boardPiecesPref[currentShipID], new Vector3(row, boardPiecesPref[currentShipID].
+                    transform.position.y, col + 1.5f), boardPiecesPref[currentShipID].transform.rotation) as GameObject;
+                }
+                shipPlacedCount++;
+                break;    
+            case 4:
+                if (!isVertical)
+                {
+                    GameObject shipVisual = GameObject.Instantiate(boardPiecesPref[currentShipID], new Vector3(row - 0.5f, boardPiecesPref[currentShipID].transform.position.y + .04f, col + .2f), boardPiecesPref[currentShipID].transform.rotation) as GameObject;
+                    shipVisual.transform.localScale = new Vector3(.03f, .03f, .03f);
+                    
+                }
+                else
+                {
+                    GameObject shipVisual = GameObject.Instantiate(boardPiecesPref[currentShipID], new Vector3(row + .2f, boardPiecesPref[currentShipID].
+                    transform.position.y +.04f, col + 4.5f), boardPiecesPref[currentShipID].transform.rotation) as GameObject;
+                    shipVisual.transform.localScale = new Vector3(.03f, .03f, .03f);
+                    shipVisual.transform.RotateAround(shipVisual.transform.position, Vector3.up, 90f);
+
+                }
+                shipPlacedCount++;
+                break;
+        }
+        //invoke place event
+        OnBoardPiecePlaced?.Invoke(currentShipID);
+
+        //reset parameters
+        currentShipID = -1;
+        shipSize = 0;
+        Destroy(tmpBlockHolder); //remove the visual block after placing model
+    }
+
+    public static bool isBusy = false;
+    IEnumerator Wait(float seconds = 0.5f)
+    {
+        isBusy = true;
+        yield return new WaitForSeconds(seconds);
+        isBusy = false;
+    }
 }

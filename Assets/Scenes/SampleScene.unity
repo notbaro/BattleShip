@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028355, g: 0.22571374, b: 0.30692255, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -916,8 +916,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: -50}
-  m_SizeDelta: {x: 200, y: 100}
+  m_AnchoredPosition: {x: 50, y: -50}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &584208798
 MonoBehaviour:
@@ -995,8 +995,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 63458ef50554cc7458c757d587eff65d, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -2143,12 +2143,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BoardUnitPrefab: {fileID: 2531944195430783703, guid: bca544d93dedc43419c7755847011006,
     type: 3}
-  BoardUnitAttackPrefab: {fileID: 2531944195430783703, guid: bca544d93dedc43419c7755847011006,
+  BoardUnitAttackPrefab: {fileID: 2531944195430783703, guid: 59b42aafa440a1a49ac83fe4288a7f8d,
     type: 3}
   BlockVisualizerPrefab: {fileID: 6127506112281594607, guid: a87c4a15b37f52341be652a9d387e37e,
     type: 3}
-  boardPiecesPref: []
+  boardPiecesPref:
+  - {fileID: 100000, guid: d1cd57c78c4fd374898396cfd01e9236, type: 3}
+  - {fileID: 100000, guid: fced151d03c8d7c4ea084b0fa84e4d6b, type: 3}
+  - {fileID: 100000, guid: 676c78f930ebe214bbb135bf0616b145, type: 3}
+  - {fileID: 100038, guid: 408ea4b8b2681954daebe38e2bdfc97b, type: 3}
+  - {fileID: 919132149155446097, guid: 63982075b45d1af4c861b3e41343b4d4, type: 3}
   currentShipID: 0
+  shipPlacedCount: 0
 --- !u!1 &1634623059
 GameObject:
   m_ObjectHideFlags: 0
@@ -2166,7 +2172,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1634623060
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2394,6 +2400,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62cc37ff77966dc46b56bb1ca4677c89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  collectionOfPlayerPieceButtons:
+  - {fileID: 1447115164}
+  - {fileID: 97121982}
+  - {fileID: 1109980810}
+  - {fileID: 22496956}
+  - {fileID: 574021989}
+  btnOrientation: {fileID: 584208798}
+  btnUIReset: {fileID: 0}
+  btnExit: {fileID: 0}
+  spriteHorizontal: {fileID: 21300000, guid: f0ac9c938657e6948a73173f75217fc2, type: 3}
+  spriteVertical: {fileID: 21300000, guid: 63458ef50554cc7458c757d587eff65d, type: 3}
+  DisplayInstructions: 0
+  isVertical: 0
 --- !u!4 &2052871536
 Transform:
   m_ObjectHideFlags: 0

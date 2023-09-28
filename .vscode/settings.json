@@ -56,5 +56,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "BattleShip.sln"
+    "dotnet.defaultSolution": "BattleShip.sln",
+    "vscord.app.privacyMode.enable": false
 }

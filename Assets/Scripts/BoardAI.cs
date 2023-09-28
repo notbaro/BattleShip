@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BoardAI : Board
@@ -35,6 +37,92 @@ public class BoardAI : Board
             }
             row++;
             col = 1;
+        }
+    }
+
+    public void PlaceShips() 
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            int row = Random.Range(0, 9);
+            int col = Random.Range(0, 9);
+            bool vertical = Random.Range(0, 2) == 0 ? true : false;
+            CheckPlacement(row, col, aiShipSizes[i], vertical);
+        }
+    }
+
+    private void CheckPlacement(int row, int col, int size, bool vertical)
+    {
+        GameObject tmp = board[row, col];
+        var boardUnit = tmp.GetComponentInChildren<BoardUnit>();
+        //bounds check
+        if (boardUnit.isOccupied || (row + size > 9) || (col + size > 9))
+        {
+            int newRow = Random.Range(0, 9);
+            int newCol = Random.Range(0, 9);
+            CheckPlacement(newRow, newCol, size, vertical);
+            return; 
+        }
+
+        bool OK_TO_PLACE = true;
+        //occupied check
+        if (vertical && (row + size < 10))
+        {
+            for (int i = 0; i < size; i++)
+            {
+                GameObject bp = board[row + i, col];
+                var bpUI = bp.GetComponentInChildren<BoardUnit>();
+                if (bpUI.isOccupied)
+                {
+                    OK_TO_PLACE = false;
+                }
+            }
+        }
+        if (!vertical && (col + size < 10))
+        {
+            for (int i = 0; i < size; i++)
+            {
+                GameObject bp = board[row, col + i];
+                var bpUI = bp.GetComponentInChildren<BoardUnit>();
+                if (bpUI.isOccupied)
+                {
+                    OK_TO_PLACE = false;
+                }
+            }
+        }
+        //placing ships
+        if (OK_TO_PLACE)
+        {
+            if (vertical)
+            {
+                for (int i = 0; i < size; i++)
+                {
+                    GameObject visual = GameObject.Instantiate(cubePrefab, new Vector3(row + i + 11, 0, col), cubePrefab.transform.rotation) as GameObject;
+                    visual.GetComponent<Renderer>().material.color = UnityEngine.Color.yellow;
+
+                    GameObject sB = board[row + i, col];
+                    sB.GetComponentInChildren<BoardUnit>().isOccupied = true;
+                    board[row + i, col] = sB;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < size; i++)
+                {
+                    GameObject visual = GameObject.Instantiate(cubePrefab, new Vector3(row + 11, 0, col + i), cubePrefab.transform.rotation) as GameObject;
+                    visual.GetComponent<Renderer>().material.color = UnityEngine.Color.magenta;
+
+                    GameObject sB = board[row, col + i];
+                    sB.GetComponentInChildren<BoardUnit>().isOccupied = true;
+                    board[row, col + i] = sB;
+                }
+            }
+        }
+        else
+        {
+            int newRow = Random.Range(0, 9);
+            int newCol = Random.Range(0, 9);
+            CheckPlacement(newRow, newCol, size, vertical);
         }
     }
 }
