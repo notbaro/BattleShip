@@ -97,7 +97,7 @@ public class BoardAI : Board
             {
                 for (int i = 0; i < size; i++)
                 {
-                    GameObject visual = GameObject.Instantiate(cubePrefab, new Vector3(row + i + 11, 0, col), cubePrefab.transform.rotation) as GameObject;
+                    GameObject visual = GameObject.Instantiate(cubePrefab, new Vector3(row + i + 11, 0.5f, col), cubePrefab.transform.rotation) as GameObject;
                     visual.GetComponent<Renderer>().material.color = UnityEngine.Color.yellow;
 
                     GameObject sB = board[row + i, col];
@@ -109,7 +109,7 @@ public class BoardAI : Board
             {
                 for (int i = 0; i < size; i++)
                 {
-                    GameObject visual = GameObject.Instantiate(cubePrefab, new Vector3(row + 11, 0, col + i), cubePrefab.transform.rotation) as GameObject;
+                    GameObject visual = GameObject.Instantiate(cubePrefab, new Vector3(row + 11, 0.5f, col + i), cubePrefab.transform.rotation) as GameObject;
                     visual.GetComponent<Renderer>().material.color = UnityEngine.Color.magenta;
 
                     GameObject sB = board[row, col + i];

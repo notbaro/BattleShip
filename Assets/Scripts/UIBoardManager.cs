@@ -47,7 +47,13 @@ public class UIBoardManager : MonoBehaviour
 
     private void OnBoardPiecePlaced(int id)
     {
-        collectionOfPlayerPieceButtons[id].gameObject.SetActive(false);
+        if (id < 0)
+        {
+            Debug.LogError("Invalid ID. Possibly caused by not pressing a ship button yet.");
+            return;
+        } 
+        else
+            collectionOfPlayerPieceButtons[id].gameObject.SetActive(false);
     }
 
     void Start()
