@@ -45,9 +45,9 @@ public class BoardManager : MonoBehaviour
     [SerializeField]
     private int shipPlacedCount = 0;
     bool placeEnemyShip = true;
-    GameObject tmpAttackHighlight = null;
-    RaycastHit tmpHitAttackHighlight;
-    GameObject tmpAttackBlockHolder = null;
+    // GameObject tmpAttackHighlight = null;
+    // RaycastHit tmpHitAttackHighlight;
+    // GameObject tmpAttackBlockHolder = null;
 
     private void OnEnable()
     {
@@ -88,13 +88,6 @@ public class BoardManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // PlacePlayerPieces();
-        // PLACE_BLOCK = !shipPlaced[currentShipID];
-        // Debug.Log("OK_TO_PLACE: " + OK_TO_PLACE);
-        // for (int i = 0; i < shipPlaced.Length; i++)
-        // {
-        //     Debug.Log($"shipPlaced[{i}]: " + shipPlaced[i]);
-        // }
         if (isBusy)
             return;
         if (shipPlacedCount < 5)
@@ -254,6 +247,7 @@ public class BoardManager : MonoBehaviour
     {
         switch (currentShipID)
         {
+            //id 0, size 2
             case 0:
                 if (!isVertical)
                 {
@@ -270,6 +264,7 @@ public class BoardManager : MonoBehaviour
                 }
                 shipPlacedCount++;
                 break;
+            //id 1, size 3
             case 1:
                 if (!isVertical)
                 {
@@ -286,6 +281,7 @@ public class BoardManager : MonoBehaviour
                 }
                 shipPlacedCount++;
                 break;
+            //id 2, size 3
             case 2:
             if (!isVertical)
                 {
@@ -302,6 +298,7 @@ public class BoardManager : MonoBehaviour
                 }
                 shipPlacedCount++;
                 break;
+            //id 3, size 4
             case 3:
             if (!isVertical)
                 {
@@ -315,6 +312,7 @@ public class BoardManager : MonoBehaviour
                 }
                 shipPlacedCount++;
                 break;    
+            //id 4, size 5
             case 4:
                 if (!isVertical)
                 {

@@ -9,6 +9,7 @@ public class BoardAI : Board
 {
     GameObject cubePrefab;
     int[] aiShipSizes = new int[5] { 2, 3, 3, 4, 5 };
+    private UnityEngine.Color[] visualColors = new UnityEngine.Color[5] { UnityEngine.Color.red, UnityEngine.Color.green, UnityEngine.Color.blue, UnityEngine.Color.magenta, UnityEngine.Color.cyan, };
     public BoardAI(GameObject unitPrefab, GameObject prefab)
     {
         this.boardUnitPrefab = unitPrefab;
@@ -16,7 +17,6 @@ public class BoardAI : Board
         ClearBoard();
     }
     //visual color for ai ships placement - red, green, blue, magenta, cyan {2, 3, 3, 4, 5}
-    private UnityEngine.Color[] visualColors = new UnityEngine.Color[5] { UnityEngine.Color.red, UnityEngine.Color.green, UnityEngine.Color.blue, UnityEngine.Color.magenta, UnityEngine.Color.cyan, };
 
     public void CreateAIBoard()
     {
@@ -59,7 +59,7 @@ public class BoardAI : Board
         GameObject tmp = board[row, col];
         var boardUnit = tmp.GetComponentInChildren<BoardUnit>();
         //bounds check
-        if (boardUnit.isOccupied || (row + aiShipSizes[sizeIndex] > 9) || (col + aiShipSizes[sizeIndex] > 9))
+        if (boardUnit.isOccupied || (row + aiShipSizes[sizeIndex] > 10) || (col + aiShipSizes[sizeIndex] > 10))
         {
             int newRow = Random.Range(0, 9);
             int newCol = Random.Range(0, 9);

@@ -47,12 +47,7 @@ public class UIBoardManager : MonoBehaviour
 
     private void OnBoardPiecePlaced(int id)
     {
-        if (id < 0)
-        {
-            Debug.LogError("Invalid ID. Possibly caused by not pressing a ship button yet.");
-            return;
-        } 
-        else
+        if (id >= 0)
             collectionOfPlayerPieceButtons[id].gameObject.SetActive(false);
     }
 
@@ -75,14 +70,17 @@ public class UIBoardManager : MonoBehaviour
         }
     }
 
+    //flip orientation and pass to UpdateOrientationUI()
     public void OnOrientationButtonClick()
     {
         isVertical = !isVertical;
         UpdateOrientationUI();
     }
+
+    //invoke change orientation event and update the orientation button sprite
     public void UpdateOrientationUI()
     {
-        if (!isVertical)
+        if (isVertical)
         {
             btnOrientation.image.sprite = spriteVertical;
         }
@@ -91,6 +89,18 @@ public class UIBoardManager : MonoBehaviour
             btnOrientation.image.sprite = spriteHorizontal;
         }
         OnChangeOrientation?.Invoke(isVertical);
+    }
+
+    //function to exit the game when the exit button is pressed
+    public void ExitGame()
+    {
+        Debug.Log($"Exiting Game");
+        //if the game is running in the editor, stop the game
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #endif
+        //if the game is running in a build, quit the application
+        Application.Quit();
     }
 
 }
