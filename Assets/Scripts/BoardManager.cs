@@ -13,10 +13,8 @@ public class BoardManager : MonoBehaviour
     public delegate void BoardPiecePlaced(int id);
     public static event BoardPiecePlaced OnBoardPiecePlaced;
 
-    private int[] shipSizes = { 2, 3, 3, 4, 5 };
     private int shipSize = 0;
     private bool isVertical = false;
-    private bool[] shipPlaced = { false, false, false, false, false };
 
     public BoardPlayer boardPlayer;
     public BoardAI boardAI;
@@ -192,6 +190,7 @@ public class BoardManager : MonoBehaviour
         }
         if (Input.GetMouseButtonDown(0)) //
         {
+            Debug.Log($"Left Mouse Button Clicked.");
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 100))
             {
